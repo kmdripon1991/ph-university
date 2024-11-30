@@ -37,7 +37,7 @@ export const studentValidationSchema = z.object({
   email: z.string().email(),
   contactNo: z.string(),
   emergencyContactNo: z.string(),
-  bloogGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
+  bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
   presentAddress: z.string(),
   permanentAddress: z.string(),
   guardian: guardianSchema,
