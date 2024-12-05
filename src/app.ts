@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { UserRoutes } from './app/modules/user/user.route';

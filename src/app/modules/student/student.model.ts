@@ -167,26 +167,33 @@ studentSchema.pre('find', function (next) {
   next();
 });
 
-studentSchema.pre('findOne', function (next) {
-  this.find({ isDeleted: { $ne: true } });
+// studentSchema.pre('findOne', function (next) {
+//   this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
+studentSchema.pre('findOne', async function (next) {
+  const { id } = this.getQuery();
+  // console.log(id);
+  const existingStudent = await Student.findOne({
+    id,
+    isDeleted: { $ne: true },
+  });
+  // console.log(existingStudent);
+  if (!existingStudent) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Student not found');
+  }
   next();
 });
+
 studentSchema.pre('findOneAndUpdate', async function (next) {
-  // this.find({ isDeleted: { $ne: true } });
-  // next();
-  const updateId = this.getQuery();
-  const existingStudent = await Student.findOne({ updateId });
+  const { id } = this.getQuery();
+  const existingStudent = await Student.findOne({ id });
   if (!existingStudent) {
     throw new AppError(
       httpStatus.NOT_FOUND,
       'Student id nooooooooooooooot found',
     );
   }
-  next();
-});
-
-studentSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
 });
 
