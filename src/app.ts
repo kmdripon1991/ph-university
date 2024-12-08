@@ -6,6 +6,7 @@ import { StudentRoutes } from './app/modules/student/student.route';
 import globalErrorHandlers from './app/middlewares/globalErrorHandlers';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
+import { promise } from 'zod';
 
 const app: Application = express();
 
@@ -19,6 +20,7 @@ app.use('/api/v1', router);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');
+  // Promise.reject();
 });
 
 //not found

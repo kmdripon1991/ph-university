@@ -158,7 +158,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
 
 // virtual
 studentSchema.virtual('fullName').get(function () {
-  return this.name.firstName + this.name.middleName + this.name.lastName;
+  // return `${this.name?.firstName} ${this.name?.middleName} ${this.name?.lastName}`;
+  return [this.name?.firstName, this.name?.middleName, this.name?.lastName]
+    .filter(Boolean)
+    .join(' ');
 });
 
 // Query Middleware
@@ -167,21 +170,8 @@ studentSchema.pre('find', function (next) {
   next();
 });
 
-// studentSchema.pre('findOne', function (next) {
-//   this.find({ isDeleted: { $ne: true } });
-//   next();
-// });
-studentSchema.pre('findOne', async function (next) {
-  const { id } = this.getQuery();
-  // console.log(id);
-  const existingStudent = await Student.findOne({
-    id,
-    isDeleted: { $ne: true },
-  });
-  // console.log(existingStudent);
-  if (!existingStudent) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Student not found');
-  }
+studentSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
   next();
 });
 

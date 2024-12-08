@@ -2,6 +2,7 @@ import AppError from '../../errors/AppError';
 import { AcademicSemesterNameCodeMapper } from './academicSemester.constant';
 import { TAcademicSemester } from './academicSemester.interface';
 import { AcademicSemesterModel } from './academicSemester.model';
+import httpStatus from 'http-status';
 
 const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
   if (AcademicSemesterNameCodeMapper[payload.name] !== payload.code) {

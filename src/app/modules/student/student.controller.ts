@@ -5,7 +5,8 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 
 const getAllStudents = catchAsync(async (req: Request, res: Response) => {
-  const result = await StudentServices.getAllStudentsFromDB();
+  const query = req.query;
+  const result = await StudentServices.getAllStudentsFromDB(query);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -16,6 +17,7 @@ const getAllStudents = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleStudent = catchAsync(async (req: Request, res: Response) => {
   const { studentId } = req.params;
+  // console.log('controller', studentId);
   const result = await StudentServices.getSingleStudentFromDB(studentId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
