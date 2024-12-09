@@ -20,7 +20,7 @@ const getAllFacultyFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getSingleFacultyFromDB = async (id: string) => {
-  const result = await FacultyModel.findOne({ _id: id });
+  const result = await FacultyModel.findById(id);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Faculty not found');
   }
@@ -42,14 +42,10 @@ const updateSingleFacultyIntoDB = async (
     }
   }
 
-  const result = await FacultyModel.findOneAndUpdate(
-    { id },
-    modifiedUpdatedData,
-    {
-      new: true,
-      runValidators: true,
-    },
-  );
+  const result = await FacultyModel.findByIdAndUpdate(id, modifiedUpdatedData, {
+    new: true,
+    runValidators: true,
+  });
   return result;
 };
 
@@ -58,17 +54,17 @@ const deleteFacultyFromDB = async (id: string) => {
 
   try {
     session.startTransaction();
-    const deletedAdmin = await FacultyModel.findOneAndUpdate(
-      { id },
+    const deletedFaculty = await FacultyModel.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
-    if (!deletedAdmin) {
+    if (!deletedFaculty) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete admin');
     }
-
-    const deletedUser = await UserModel.findOneAndUpdate(
-      { id },
+    const userId = deletedFaculty.user;
+    const deletedUser = await UserModel.findByIdAndUpdate(
+      userId,
       { isDeleted: true },
       { new: true, session },
     );
@@ -77,7 +73,7 @@ const deleteFacultyFromDB = async (id: string) => {
     }
     await session.commitTransaction();
     await session.endSession();
-    return deletedAdmin;
+    return deletedFaculty;
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();

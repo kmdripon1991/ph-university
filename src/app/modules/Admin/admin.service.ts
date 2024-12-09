@@ -20,7 +20,7 @@ const getAllAdminsFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getSingleAdminFromDB = async (id: string) => {
-  const result = await AdminModel.findOne({ _id: id });
+  const result = await AdminModel.findById(id);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Admin not found');
   }
@@ -42,7 +42,7 @@ const updateSingleAdminIntoDB = async (
     }
   }
 
-  const result = await AdminModel.findOneAndUpdate(
+  const result = await AdminModel.findByIdAndUpdate(
     { id },
     modifiedUpdatedData,
     {
@@ -58,17 +58,17 @@ const deleteAdminFromDB = async (id: string) => {
 
   try {
     session.startTransaction();
-    const deletedAdmin = await AdminModel.findOneAndUpdate(
-      { id },
+    const deletedAdmin = await AdminModel.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
     if (!deletedAdmin) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete admin');
     }
-
+    const userId = deletedAdmin.user;
     const deletedUser = await UserModel.findOneAndUpdate(
-      { id },
+      userId,
       { isDeleted: true },
       { new: true, session },
     );

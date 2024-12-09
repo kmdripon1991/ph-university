@@ -16,9 +16,8 @@ const getAllFaculties = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleFaculty = catchAsync(async (req: Request, res: Response) => {
-  const { facultyId } = req.params;
-  // console.log('controller', studentId);
-  const result = await FacultyServices.getSingleFacultyFromDB(facultyId);
+  const { id } = req.params;
+  const result = await FacultyServices.getSingleFacultyFromDB(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -28,27 +27,24 @@ const getSingleFaculty = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateSingleFaculty = catchAsync(async (req: Request, res: Response) => {
-  const { facultyId } = req.params;
+  const { id } = req.params;
   const { faculty } = req.body;
-  const result = await FacultyServices.updateSingleFacultyIntoDB(
-    facultyId,
-    faculty,
-  );
+  const result = await FacultyServices.updateSingleFacultyIntoDB(id, faculty);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Admin is updated successfully',
+    message: 'Faculty is updated successfully',
     data: result,
   });
 });
 
 const deleteFaculty = catchAsync(async (req: Request, res: Response) => {
-  const { adminId } = req.params;
-  const result = await FacultyServices.deleteFacultyFromDB(adminId);
+  const { id } = req.params;
+  const result = await FacultyServices.deleteFacultyFromDB(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Admin is deleted successfully',
+    message: 'Faculty is deleted successfully',
     data: result,
   });
 });

@@ -7,14 +7,14 @@ const router = express.Router();
 
 router.get('/', AdminsControllers.getAllAdmins);
 
-router.get('/:adminId', AdminsControllers.getSingleAdmin);
+router.get('/:id', AdminsControllers.getSingleAdmin);
 
 router.patch(
-  '/:adminId',
+  '/:id',
   ValidateRequest(AdminsValidation.updateAdminValidationSchema),
   AdminsControllers.updateSingleAdmin,
 );
 
-router.delete('/:adminId', AdminsControllers.deleteAdmin);
+router.delete('/:id', AdminsControllers.deleteAdmin);
 
 export const AdminRoutes = router;
