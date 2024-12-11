@@ -35,22 +35,50 @@ const getSingleCourse = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-// const updateSingleAcademicSemester = catchAsync(
-//   async (req: Request, res: Response) => {
-//     const { semesterId } = req.params;
-//     const result =
-//       await AcademicSemesterServices.updateSingleAcademicSemesterIntoDB(
-//         semesterId,
-//         req.body,
-//       );
-//     sendResponse(res, {
-//       statusCode: httpStatus.OK,
-//       success: true,
-//       message: 'Individual academic semester updated successfully',
-//       data: result,
-//     });
-//   },
-// );
+const updateCourse = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await CourseServices.updateCourseIntoDB(id, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Course updated successfully',
+    data: result,
+  });
+});
+
+const assignFacultyWithCourse = catchAsync(
+  async (req: Request, res: Response) => {
+    const { courseId } = req.params;
+    const { faculties } = req.body;
+    const result = await CourseServices.assignFacultyWithCourseIntoDB(
+      courseId,
+      faculties,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Faculties assigned successfully',
+      data: result,
+    });
+  },
+);
+
+const removeFacultyWithCourse = catchAsync(
+  async (req: Request, res: Response) => {
+    const { courseId } = req.params;
+    const { faculties } = req.body;
+    const result = await CourseServices.removeFacultyFromCourseFromDB(
+      courseId,
+      faculties,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Faculties remove successfully',
+      data: result,
+    });
+  },
+);
 
 const deleteSingleCourse = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -62,9 +90,13 @@ const deleteSingleCourse = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 export const CourseControllers = {
   createCourse,
   getAllCourses,
   getSingleCourse,
+  updateCourse,
+  assignFacultyWithCourse,
+  removeFacultyWithCourse,
   deleteSingleCourse,
 };
