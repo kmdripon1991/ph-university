@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import AppError from '../../errors/AppError';
-import { UserModel } from '../user/user.model';
+import { User } from '../user/user.model';
 import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { FacultyModel } from './faculty.model';
@@ -63,7 +63,7 @@ const deleteFacultyFromDB = async (id: string) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete admin');
     }
     const userId = deletedFaculty.user;
-    const deletedUser = await UserModel.findByIdAndUpdate(
+    const deletedUser = await User.findByIdAndUpdate(
       userId,
       { isDeleted: true },
       { new: true, session },

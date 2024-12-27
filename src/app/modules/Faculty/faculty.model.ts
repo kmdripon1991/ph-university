@@ -80,7 +80,6 @@ const facultySchema = new Schema<TFaculty>(
     },
     profileImage: {
       type: String,
-      required: [true, 'Profile image is required'],
     },
     academicDepartment: {
       type: Schema.Types.ObjectId,

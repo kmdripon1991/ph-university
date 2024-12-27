@@ -31,9 +31,10 @@ const updateUserNameValidationSchema = z.object({
 
 const createFacultyValidationSchema = z.object({
   body: z.object({
-    password: z.string().max(20),
+    password: z.string().max(20).optional(),
     faculty: z.object({
       name: createUserNameValidationSchema,
+      designation: z.string(),
       gender: z.enum([...Gender] as [string, ...string[]]),
       dateOfBirth: z.string(),
       email: z.string().email(),
@@ -42,7 +43,7 @@ const createFacultyValidationSchema = z.object({
       bloodGroup: z.enum([...BloodGroup] as [string, ...string[]]),
       presentAddress: z.string().max(300),
       permanentAddress: z.string().max(300),
-      profileImage: z.string(),
+      // profileImage: z.string(),
       academicDepartment: z.string(),
     }),
   }),

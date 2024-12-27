@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { TStudent } from './student.interface';
 import { Student } from './student.model';
 import AppError from '../../errors/AppError';
-import { UserModel } from '../user/user.model';
+import { User } from '../user/user.model';
 import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { studentSearchableFields } from './student.constant';
@@ -62,6 +62,7 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
 
   const studentQuery = new QueryBuilder(
     Student.find()
+      .populate('user')
       .populate('admissionSemester')
       .populate({
         path: 'academicDepartment',
@@ -144,7 +145,7 @@ const deleteStudentFromDB = async (id: string) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete student');
     }
 
-    const deletedUser = await UserModel.findOneAndUpdate(
+    const deletedUser = await User.findOneAndUpdate(
       { id },
       { isDeleted: true },
       { new: true, session },
