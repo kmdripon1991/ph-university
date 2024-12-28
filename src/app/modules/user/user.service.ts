@@ -20,7 +20,6 @@ import { AdminModel } from '../Admin/admin.model';
 import { uploadImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
 const createStudentIntoDB = async (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   file: any,
   password: string,
   payload: TStudent,
@@ -42,6 +41,19 @@ const createStudentIntoDB = async (
   if (!admissionSemester) {
     throw new AppError(httpStatus.NOT_FOUND, 'Admission semester not found');
   }
+  //find academic department info
+  const academicDepartment = await AcademicDepartmentModel.findById(
+    payload.academicDepartment,
+  );
+  if (!academicDepartment) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Admission Department not found');
+  }
+
+  if (!academicDepartment.academicFaculty) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Academic Faculty not found');
+  }
+
+  payload.academicFaculty = academicDepartment.academicFaculty;
 
   //crate session
   const session = await mongoose.startSession();
@@ -52,13 +64,13 @@ const createStudentIntoDB = async (
     //set generated id
     userData.id = await generateStudentId(admissionSemester);
 
-    const imageName = `${userData.id}${payload?.name?.firstName}`;
-    const path = file?.path;
+    if (file) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const path = file?.path;
 
-    const { secure_url } = (await uploadImageToCloudinary(imageName, path)) as {
-      secure_url: string;
-    };
-    console.log(secure_url);
+      const { secure_url } = await uploadImageToCloudinary(imageName, path);
+      payload.profileImg = secure_url as string;
+    }
 
     //create a user(start transaction-1)
     const newUser = await User.create([userData], { session }); //array
@@ -69,7 +81,6 @@ const createStudentIntoDB = async (
     //set id, _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; //reference _id
-    payload.profileImg = secure_url;
 
     //create a student(start transaction-2)
     const newStudent = await Student.create([payload], { session });
@@ -79,17 +90,13 @@ const createStudentIntoDB = async (
     await session.commitTransaction();
     await session.endSession();
     return newStudent[0]; //return newStudent
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     await session.abortTransaction();
     await session.endSession();
-    // throw new AppError(
-    //   httpStatus.INTERNAL_SERVER_ERROR,
-    //   (err as Error).message || 'Failed to create student',
-    // );
     throw new Error(err);
   }
 };
+
 const createFacultyIntoDB = async (
   file: any,
   password: string,
@@ -104,16 +111,21 @@ const createFacultyIntoDB = async (
   userData.role = 'faculty';
   //set user email
   userData.email = payload.email;
-  // console.log(userData);
 
-  //find academic faculty info
+  //find academic department info
   const academicDepartment = await AcademicDepartmentModel.findById(
     payload.academicDepartment,
   );
-  // console.log(academicDepartment);
+
   if (!academicDepartment) {
     throw new AppError(httpStatus.NOT_FOUND, 'Academic Department not found');
   }
+
+  if (!academicDepartment.academicFaculty) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Academic Faculty not found');
+  }
+
+  payload.academicFaculty = academicDepartment.academicFaculty;
 
   //crate session
   const session = await mongoose.startSession();
@@ -123,23 +135,15 @@ const createFacultyIntoDB = async (
 
     //set generated id
     userData.id = await generateFacultyId();
-    const imageName = `${userData.id}${payload?.name?.firstName}`;
-    console.log(file);
-    const path = file?.path;
-    // let secureUrl = '';
-    // if (path) {
-    //   const { secure_url } = (await uploadImageToCloudinary(
-    //     imageName,
-    //     path,
-    //   )) as {
-    //     secure_url: string;
-    //   };
-    //   secureUrl = secure_url;
-    // }
 
-    const { secure_url } = (await uploadImageToCloudinary(imageName, path)) as {
-      secure_url: string;
-    };
+    if (file) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const path = file?.path;
+
+      const { secure_url } = await uploadImageToCloudinary(imageName, path);
+      // console.log(secure_url);
+      payload.profileImg = secure_url as string;
+    }
 
     //create a user(start transaction-1)
     const newUser = await User.create([userData], { session }); //array
@@ -150,7 +154,6 @@ const createFacultyIntoDB = async (
     //set id, _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; //reference _id
-    payload.profileImage = secure_url;
 
     //create a faculty (start transaction-2)
     const newFaculty = await FacultyModel.create([payload], { session });
@@ -159,7 +162,7 @@ const createFacultyIntoDB = async (
     }
     await session.commitTransaction();
     await session.endSession();
-    return newFaculty[0]; //return newStudent
+    return newFaculty[0];
   } catch (err: any) {
     await session.abortTransaction();
     await session.endSession();
@@ -181,7 +184,6 @@ const createAdminIntoDB = async (
   userData.role = 'admin';
   //set user email
   userData.email = payload.email;
-  // console.log('from user service', userData);
 
   //crate session
   const session = await mongoose.startSession();
@@ -191,13 +193,15 @@ const createAdminIntoDB = async (
 
     //set generated id
     userData.id = await generateAdminId();
-    // console.log(userData.id);
 
-    const imageName = `${userData.id}${payload?.name?.firstName}`;
-    const path = file.path;
-    const { secure_url } = (await uploadImageToCloudinary(imageName, path)) as {
-      secure_url: string;
-    };
+    if (file) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const path = file?.path;
+
+      const { secure_url } = await uploadImageToCloudinary(imageName, path);
+
+      payload.profileImg = secure_url as string;
+    }
 
     //create a user(start transaction-1)
     const newUser = await User.create([userData], { session }); //array
@@ -208,7 +212,6 @@ const createAdminIntoDB = async (
     //set id, _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; //reference _id
-    payload.profileImage = secure_url;
 
     //create a admin (start transaction-2)
     const newAdmin = await AdminModel.create([payload], { session });
@@ -217,8 +220,7 @@ const createAdminIntoDB = async (
     }
     await session.commitTransaction();
     await session.endSession();
-    return newAdmin[0]; //return newStudent
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return newAdmin[0];
   } catch (err: any) {
     await session.abortTransaction();
     await session.endSession();

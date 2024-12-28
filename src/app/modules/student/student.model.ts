@@ -135,7 +135,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: localGuardianSchema,
       required: [true, 'Local guardian information is required'],
     },
-    profileImg: { type: String },
+    profileImg: { type: String, default: '' },
     admissionSemester: {
       type: Schema.Types.ObjectId,
       ref: 'AcademicSemester',
@@ -143,6 +143,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
     academicDepartment: {
       type: Schema.Types.ObjectId,
       ref: 'AcademicDepartment',
+    },
+    academicFaculty: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicFaculty',
     },
     isDeleted: {
       type: Boolean,
@@ -158,7 +162,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
 
 // virtual
 studentSchema.virtual('fullName').get(function () {
-  // return `${this.name?.firstName} ${this.name?.middleName} ${this.name?.lastName}`;
   return [this.name?.firstName, this.name?.middleName, this.name?.lastName]
     .filter(Boolean)
     .join(' ');
@@ -179,10 +182,7 @@ studentSchema.pre('findOneAndUpdate', async function (next) {
   const { id } = this.getQuery();
   const existingStudent = await Student.findOne({ id });
   if (!existingStudent) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'Student id nooooooooooooooot found',
-    );
+    throw new AppError(httpStatus.NOT_FOUND, 'Student id not found');
   }
   next();
 });

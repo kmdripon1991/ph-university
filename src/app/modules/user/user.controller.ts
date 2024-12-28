@@ -26,15 +26,12 @@ const createStudent = catchAsync(async (req: Request, res: Response) => {
 
 const createFaculty = catchAsync(async (req: Request, res: Response) => {
   const { password, faculty: facultyData } = req.body;
-  // console.log(facultyData);
-  console.log(req.file);
 
   const result = await UserServices.createFacultyIntoDB(
     req.file,
     password,
     facultyData,
   );
-  // console.log(result);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

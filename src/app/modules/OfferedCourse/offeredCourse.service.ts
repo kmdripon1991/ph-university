@@ -81,6 +81,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     await OfferedCourseModel.findOne({
       semesterRegistration,
       academicSemester,
+      // course,
       section,
     });
   // console.log(

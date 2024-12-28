@@ -10,7 +10,7 @@ router.post(
   ValidateRequest(OfferedCourseValidations.createOfferedCourseValidationSchema),
   OfferedCourseControllers.createOfferedCourse,
 );
-router.get('/', OfferedCourseControllers.createOfferedCourse);
+router.get('/', OfferedCourseControllers.allOfferedCourses);
 
 router.get('/:offeredCourseId', OfferedCourseControllers.createOfferedCourse);
 
