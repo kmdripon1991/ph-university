@@ -23,7 +23,6 @@ export const createAdminValidationSchema = z.object({
       email: z.string().email('Please provide a valid email address'),
       contactNo: z.string(),
       emergencyContactNo: z.string(),
-      profileImage: z.string(),
       isDeleted: z.boolean().default(false),
     }),
   }),

@@ -76,7 +76,7 @@ const AdminSchema = new Schema<TAdmin>(
       type: String,
       enum: [...BloodGroup] as [string, ...string[]],
     },
-    profileImage: {
+    profileImg: {
       type: String,
       default: '',
     },

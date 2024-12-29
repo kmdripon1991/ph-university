@@ -141,7 +141,7 @@ const createFacultyIntoDB = async (
       const path = file?.path;
 
       const { secure_url } = await uploadImageToCloudinary(imageName, path);
-      // console.log(secure_url);
+
       payload.profileImg = secure_url as string;
     }
 
